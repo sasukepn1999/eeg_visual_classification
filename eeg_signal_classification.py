@@ -142,7 +142,7 @@ model_options = {key: int(value) if value.isdigit() else (float(value) if value[
 # Create discriminator model/optimizer
 module = importlib.import_module("models." + opt.model_type)
 model = module.Model(**model_options)
-optimizer = getattr(torch.optim, opt.optim)(model.parameters(), lr = opt.learning_rate)
+optimizer = getattr(torch.optim, opt.optim)(model.parameters(), lr = opt.learning_rate, momentum=0.9)
     
 # Setup CUDA
 if not opt.no_cuda:
@@ -171,7 +171,7 @@ for epoch in range(1, opt.epochs+1):
     accuracies = {"train": 0, "val": 0, "test": 0}
     counts = {"train": 0, "val": 0, "test": 0}
     # Adjust learning rate for SGD
-    if opt.optim == "SGD":
+    if opt.optim == "SGD1":
         lr = opt.learning_rate * (opt.learning_rate_decay_by ** (epoch // opt.learning_rate_decay_every))
         for param_group in optimizer.param_groups:
             param_group['lr'] = lr
