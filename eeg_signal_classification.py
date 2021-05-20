@@ -83,6 +83,8 @@ class EEGDataset:
             self.data=loaded['dataset']        
         self.labels = loaded["labels"]
         self.images = loaded["images"]
+        self.means = loaded['means']
+        self.stds = loaded['stddevs']
         
         # Compute size
         self.size = len(self.data)
@@ -93,8 +95,9 @@ class EEGDataset:
 
     # Get item
     def __getitem__(self, i):
+        eeg = (self.data[i]["eeg"].float() - self.means) / self.stds
         # Process EEG
-        eeg = self.data[i]["eeg"].float().t()
+        eeg = eeg.t()
         eeg = eeg[opt.time_low:opt.time_high,:]
 
         if opt.model_type == "model10":
