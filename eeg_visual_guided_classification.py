@@ -25,7 +25,7 @@ parser.add_argument('-tl', '--time_low', default=20, type=float, help="lowest ti
 parser.add_argument('-th', '--time_high', default=460,  type=float, help="highest time value")
 
 # Model type/options
-parser.add_argument('-mt','--model_type', default='alex', help='specify which generator should be used: lstm|EEGChannelNet|alex')
+parser.add_argument('-mt','--model_type', default='alex', help='specify which generator should be used: alex|EEGChannelNet|alex')
 # It is possible to test out multiple deep classifiers:
 # - lstm is the model described in the paper "Deep Learning Human Mind for Automated Visual Classification”, in CVPR 2017
 # - model10 is the model described in the paper "Decoding brain representations by multimodal learning of neural activity and visual features", TPAMI 2020
@@ -118,7 +118,7 @@ class Splitter:
         loaded = torch.load(split_path)
         self.split_idx = loaded["splits"][split_num][split_name]
         # Filter data
-        self.split_idx = [i for i in self.split_idx if 450 <= self.dataset.data[i]["eeg"].size(1) <= 600]
+        #self.split_idx = [i for i in self.split_idx if 450 <= self.dataset.data[i]["eeg"].size(1) <= 600]
         # Compute size
         self.size = len(self.split_idx)
 
