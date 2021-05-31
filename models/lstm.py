@@ -15,7 +15,7 @@ import numpy as np
 
 class Model(nn.Module):
 
-    def __init__(self, input_size=128, lstm_size=30, lstm_layers=4, output_size=30):
+    def __init__(self, input_size=128, lstm_size=128, lstm_layers=4, output_size=128):
         # Call parent
         super().__init__()
         # Define parameters
@@ -26,7 +26,7 @@ class Model(nn.Module):
 
         # Define internal modules
         self.lstm = nn.LSTM(input_size, lstm_size, num_layers=lstm_layers, batch_first=True)
-        #self.output = nn.Linear(lstm_size, output_size)
+        self.output = nn.Linear(lstm_size, output_size)
         self.classifier = nn.Linear(output_size,40)
         
     def forward(self, x):
@@ -40,6 +40,21 @@ class Model(nn.Module):
         x = self.lstm(x, lstm_init)[0][:,-1,:]
         
         # Forward output
-        #x = F.relu(self.output(x))
+        x = F.relu(self.output(x))
         x = self.classifier((x))
         return x
+
+    def inference(self, x):
+        # Prepare LSTM initiale state
+        batch_size = x.size(0)
+        lstm_init = (torch.zeros(self.lstm_layers, batch_size, self.lstm_size), torch.zeros(self.lstm_layers, batch_size, self.lstm_size))
+        if x.is_cuda: lstm_init = (lstm_init[0].cuda(), lstm_init[0].cuda())
+        lstm_init = (lstm_init[0], lstm_init[1])
+
+        # Forward LSTM and get final state
+        x = self.lstm(x, lstm_init)[0][:,-1,:]
+        
+        # Forward output
+        x_f = F.relu(self.output(x))
+        x = self.classifier((x_f))
+        return x_f, x
