@@ -83,8 +83,8 @@ class EEGDataset:
             self.data=loaded['dataset']        
         self.labels = loaded["labels"]
         self.images = loaded["images"]
-        self.means = loaded['means']
-        self.stds = loaded['stddevs']
+        #self.means = loaded['means']
+        #self.stds = loaded['stddevs']
         
         # Compute size
         self.size = len(self.data)
@@ -95,8 +95,9 @@ class EEGDataset:
 
     # Get item
     def __getitem__(self, i):
-        eeg = (self.data[i]["eeg"].float() - self.means) / self.stds
+        #eeg = (self.data[i]["eeg"].float() - self.means) / self.stds
         # Process EEG
+        eeg = self.data[i]["eeg"].float()
         eeg = eeg.t()
         eeg = eeg[opt.time_low:opt.time_high,:]
 
@@ -145,7 +146,7 @@ model_options = {key: int(value) if value.isdigit() else (float(value) if value[
 # Create discriminator model/optimizer
 module = importlib.import_module("models." + opt.model_type)
 model = module.Model(**model_options)
-optimizer = getattr(torch.optim, opt.optim)(model.parameters(), lr = opt.learning_rate, momentum=0.9)
+optimizer = getattr(torch.optim, opt.optim)(model.parameters(), lr = opt.learning_rate)
     
 # Setup CUDA
 if not opt.no_cuda:
@@ -216,6 +217,7 @@ for epoch in range(1, opt.epochs+1):
         best_accuracy_val = accuracies["val"]/counts["val"]
         best_accuracy = accuracies["test"]/counts["test"]
         best_epoch = epoch
+        torch.save(model, 'best_%s__subject%d.pth' % (opt.model_type, opt.subject))
     
     TrL,TrA,VL,VA,TeL,TeA=  losses["train"]/counts["train"],accuracies["train"]/counts["train"],losses["val"]/counts["val"],accuracies["val"]/counts["val"],losses["test"]/counts["test"],accuracies["test"]/counts["test"]
     print("Model: {11} - Subject {12} - Time interval: [{9}-{10}]  [{9}-{10} Hz] - Epoch {0}: TrL={1:.4f}, TrA={2:.4f}, VL={3:.4f}, VA={4:.4f}, TeL={5:.4f}, TeA={6:.4f}, TeA at max VA = {7:.4f} at epoch {8:d}".format(epoch,
