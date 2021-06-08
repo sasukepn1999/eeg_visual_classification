@@ -101,7 +101,7 @@ class EEGDataset:
         eeg = eeg.t()
         eeg = eeg[opt.time_low:opt.time_high,:]
 
-        if opt.model_type == "model10":
+        if opt.model_type == "EEGChannelNet":
             eeg = eeg.t()
             eeg = eeg.view(1,128,opt.time_high-opt.time_low)
         # Get label
