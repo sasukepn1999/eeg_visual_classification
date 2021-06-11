@@ -27,7 +27,7 @@ class Model(nn.Module):
         # Define internal modules
         self.encoderlayer = nn.TransformerEncoderLayer(d_model=128, nhead=8)
         self.encoder = nn.TransformerEncoder(self.encoderlayer, trans_layers)
-        self.output = nn.Linear(input_size, output_size)
+        #self.output = nn.Linear(input_size, output_size)
         self.classifier = nn.Linear(output_size,40)
         
     def forward(self, x):
@@ -40,22 +40,22 @@ class Model(nn.Module):
         # Forward LSTM and get final state
         x = self.encoder(x)
         # Forward output
-        x = F.relu(self.output(x))
+        #x = F.relu(self.output(x))
         x = torch.mean(x, dim=1)
         x = self.classifier(x)
         return x
 
-    # # def inference(self, x):
-    # #     # Prepare LSTM initiale state
-    # #     batch_size = x.size(0)
-    # #     lstm_init = (torch.zeros(self.lstm_layers, batch_size, self.lstm_size), torch.zeros(self.lstm_layers, batch_size, self.lstm_size))
-    # #     if x.is_cuda: lstm_init = (lstm_init[0].cuda(), lstm_init[0].cuda())
-    # #     lstm_init = (lstm_init[0], lstm_init[1])
-
-    # #     # Forward LSTM and get final state
-    # #     x = self.lstm(x, lstm_init)[0][:,-1,:]
+    def inference(self, x):
+        # Prepare LSTM initiale state
+        batch_size = x.size(0)
+        #lstm_init = (torch.zeros(self.lstm_layers, batch_size, self.lstm_size), torch.zeros(self.lstm_layers, batch_size, self.lstm_size))
+        #if x.is_cuda: lstm_init = (lstm_init[0].cuda(), lstm_init[0].cuda())
+        #lstm_init = (lstm_init[0], lstm_init[1])
         
-    #     # Forward output
-    #     x_f = F.relu(self.output(x))
-    #     x = self.classifier((x_f))
-    #     return x_f, x
+        # Forward LSTM and get final state
+        x = self.encoder(x)
+        # Forward output
+        #x = F.relu(self.output(x))
+        x_f = torch.mean(x, dim=1)
+        x = self.classifier(x_f)
+        return x_f, x
