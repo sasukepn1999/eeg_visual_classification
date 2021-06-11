@@ -163,6 +163,7 @@ accuracies_per_epoch={"train":[],"val":[],"test":[]}
 
 best_accuracy = 0
 best_accuracy_val = 0
+best_loss_val = 10
 best_epoch = 0
 # Start training
 
@@ -213,9 +214,10 @@ for epoch in range(1, opt.epochs+1):
                 optimizer.step()
     
     # Print info at the end of the epoch
-    if accuracies["val"]/counts["val"] >= best_accuracy_val:
+    if accuracies["val"]/counts["val"] >= best_accuracy_val and losses["val"]/counts["val"] <= best_loss_val:
         best_accuracy_val = accuracies["val"]/counts["val"]
         best_accuracy = accuracies["test"]/counts["test"]
+        best_loss_val = losses["val"]/counts["val"]
         best_epoch = epoch
         torch.save(model, 'best_%s__subject%d.pth' % (opt.model_type, opt.subject))
     
