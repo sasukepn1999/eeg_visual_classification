@@ -214,12 +214,12 @@ for epoch in range(1, opt.epochs+1):
                 optimizer.step()
     
     # Print info at the end of the epoch
-    if accuracies["val"]/counts["val"] >= best_accuracy_val and losses["val"]/counts["val"] <= best_loss_val:
+    if accuracies["val"]/counts["val"] >= best_accuracy_val:
         best_accuracy_val = accuracies["val"]/counts["val"]
         best_accuracy = accuracies["test"]/counts["test"]
         best_loss_val = losses["val"]/counts["val"]
         best_epoch = epoch
-        torch.save(model, 'best_%s__subject%d.pth' % (opt.model_type, opt.subject))
+        torch.save(model, 'best_%s_subject%d.pth' % (opt.model_type, opt.subject))
     
     TrL,TrA,VL,VA,TeL,TeA=  losses["train"]/counts["train"],accuracies["train"]/counts["train"],losses["val"]/counts["val"],accuracies["val"]/counts["val"],losses["test"]/counts["test"],accuracies["test"]/counts["test"]
     print("Model: {11} - Subject {12} - Time interval: [{9}-{10}]  [{9}-{10} Hz] - Epoch {0}: TrL={1:.4f}, TrA={2:.4f}, VL={3:.4f}, VA={4:.4f}, TeL={5:.4f}, TeA={6:.4f}, TeA at max VA = {7:.4f} at epoch {8:d}".format(epoch,
